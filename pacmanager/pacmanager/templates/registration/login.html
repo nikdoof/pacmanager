@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load i18n %}
+<h2>User Login</h2>
+
+{% include "formtools/formerror.html" %}
+
+<p>
+<form method="post" action="" class="well">
+	<p>User access is controlled by the TEST Auth System, please login using your Auth login and your External Services password.</p>
+	<fieldset>
+	  {% include "formtools/formfield.html" with field=form.username class="xlarge" %}
+	  {% include "formtools/formfield.html" with field=form.password class="xlarge" %}
+	  {% csrf_token %}
+	</fieldset>
+
+	<input type="submit" value="Login" class="btn btn-inverse"/>
+	<input type="hidden" name="next" value="{{ next }}" />
+	{% csrf_token %}
+	</form>
+</p>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{% if object %}Update{% else %}Add{% endif %} Key</h1>
+
+<p>
+<form action="{% if object %}{% url key-update object.id %}{% else %}{% url key-create %}{% endif %}" method="post" class="form-horizontal">
+<fieldset>
+  {% include "formtools/formerror.html" %}
+  {% include "formtools/formfield.html" with field=form.keyid %}
+  {% include "formtools/formfield.html" with field=form.vcode %}
+  {% csrf_token %}
+  <input type="submit" value="{% if object %}Update Key{% else %}Create Key{% endif %}" class="btn btn-inverse"/>
+</fieldset>
+</form>
+<p>
+{% endblock %}

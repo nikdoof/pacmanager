@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block head %}
+<style type="text/css">
+span.positive {	color: green; }
+span.negative {	color: red; }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>{{ object.name }}</h1>
+
+<h3>Fees Balance: <span class="{% if object.balance >= 0 %}positive{% else %}negative{% endif %}">{{ object.balance|intcomma }} ISK</span></h3>
+
+<p>{% if perms.add_transaction %}<a href="{% url corporation-manualadjustment object.pk %}" class="btn"><i class="icon-plus"></i> Add Manual Adjustment</a>{% endif %}</p>
+
+<h2>Wallet Balances</h2>
+{% if balances %}
+<p><small>Data last updated: {{ last_update|date:"Y/m/d H:i:s" }}</small></p>
+<table class="table">
+{% for acc, balance in balances %}
+<tr><td>{% if acc == 0 %}Master Wallet{% else %}Wallet {{ acc }}{% endif %}</td><td>{{ balance|intcomma }} ISK</td></tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No wallet balance information is available at this time.</p>
+{% endif %}
+
+<p>&nbsp;</p>
+
+{% if object.totals.count %}
+<h2>Tax Period Overview</h2>
+<p><small>Total transactions by taxable periods and related fees</small></p>
+<p>
+<table class="table table-striped">
+<tr><th>Period</th><th>Taxable Amount</th><th>Calculated Fees</th><th>Charged</th><th>Actions</th></tr>
+{% for total in object.totals.all %}
+<tr>
+<td>{{ total.year }}-{{ total.month }}</td><td>{{ total.tax|intcomma }} ISK</td><td>{{ total.fees_due|intcomma }} ISK</td><td><i class="{% if total.charged %}icon-ok{% else %}icon-remove{% endif %}"></i></td>
+<td>{% if total.charged == 0 %}<a href="{% url total-charge total.id %}" title="Charge Period"><i class="icon-plus-sign"></i></a>{% endif %}</td>
+</tr>
+{% endfor %}
+</table>
+</p>
+{% endif %}
+
+{% if object.transactions.count %}
+<h2>Fee Transactions</h2>
+<p><small>Most recent transactions first</small></p>
+<p>
+<table class="table table-striped">
+<tr><th>Date/Time</th><th>Transaction Type</th><th>Transaction Value</th><th>Comment</th></tr>
+{% for trans in object.transactions.all %}
+<tr><td>{{ trans.date|date:"Y/m/d H:i:s" }}</td><td>{{ trans.get_type_display }}</td><td><span class="{% if trans.value > 0 %}positive{% else %}negative{% endif %}">{{ trans.value|intcomma }} ISK</span></td><td>{{ trans.comment }}</td></tr>
+{% endfor %}
+</table>
+</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style type="text/css">
+   span.negative {
+       color: red;
+    }
+    span.positive {
+       color: green;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% load humanize %}
+<h1>Corporations</h1>
+{% if object_list %}
+<p>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr><th>Name</td><th>Contact</th><th>CEO</th><th>Tax Rate</th><th>Current Balance</th></tr>
+  <thead>
+  <tbody>
+{% for obj in object_list %}
+    <tr><td><a href="{% url corporation-detail obj.pk %}">{{ obj.name }}</a></td><td>{% if obj.contact %}{{ obj.contact.username }}{% else %}<a href="{% url corporation-updatecontact obj.pk %}">Assign Contact</a>{% endif %}</td><td>{{ obj.ceo }}</td><td>{{ obj.tax_rate }}%</td><td><span class="{% if obj.balance >= 0 %}positive{% else %}negative{% endif %}">{{ obj.balance|intcomma }} ISK</span></td></tr>
+{% endfor %}
+  </tbody>
+</table>
+</p>
+{% endif %}
+{% endblock %}

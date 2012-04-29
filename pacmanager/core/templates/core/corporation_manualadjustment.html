@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Create Manual Adjustment</h1>
+
+{% include "formtools/formerror.html" %}
+
+<p>
+<form action="{% url corporation-manualadjustment corporation.pk %}" method="post" class="well">
+<fieldset>
+
+  {% include "formtools/formfield.html" with field=form.corporation %}
+  {% include "formtools/formfield.html" with field=form.amount %}
+  {% include "formtools/formfield.html" with field=form.comment %}
+  {% csrf_token %}
+  <input type="submit" value="Create" class="btn btn-inverse"/>
+</fieldset>
+</form>
+<p>
+{% endblock %}

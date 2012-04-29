@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Keys</h1>
+{% if object_list %}
+<p>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr><th>Key ID</td><th>vCode</th><th>Contact</th><th>Corporation</th><th>Actions</th></tr>
+  <thead>
+  <tbody>
+{% for obj in object_list %}
+    <tr><td>{{ obj.pk }}</td><td>{{ obj.vcode }}</td><td>{{ obj.corporation.contact }}</td><td><a href="{% url corporation-detail obj.corporation.id %}">{{ obj.corporation }}</a></td>
+	<td>{% if perms.delete_key %}<a href="#" class="delete" id="{{ obj.pk }}" title="Remove"><i class="icon-remove"></i></a> {% endif %}
+	<a href="#" class="refresh" id="{{ obj.pk }}" title="Refresh"><i class="icon-repeat"></i></a>
+	<a href="#" class="import" id="{{ obj.pk }}" title="Import Wallet"><i class="icon-download-alt"></i></a>
+	</td></tr>
+{% endfor %}
+  </tbody>
+</table>
+</p>
+{% endif %}
+
+<p><a href="{% url key-create %}" class="btn"><i class="icon-plus"></i> Add Key</a></p>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.delete').click(function() {
+      $.ajax({
+        url: '/keys/' + this.id + '/delete/',
+		type: 'DELETE',
+		headers: {
+		  'X-CSRFToken': '{{ csrf_token }}' 
+		},
+		success: function(result) {
+          $(this.obj.parentElement.parentElement).fadeOut(300, function() { this.hide() })
+		},
+		obj: this
+	  });
+    });
+	
+	$('.refresh').click(function() {
+      $.ajax({
+        url: '/keys/' + this.id + '/refresh/',
+		type: 'GET',
+		headers: {
+		  'X-CSRFToken': '{{ csrf_token }}' 
+		},
+	  });
+    });
+	
+	$('.import').click(function() {
+      $.ajax({
+        url: '/keys/' + this.id + '/import/',
+		type: 'GET',
+		headers: {
+		  'X-CSRFToken': '{{ csrf_token }}' 
+		},
+	  });
+    });
+  });
+</script>
+{% endblock %}
