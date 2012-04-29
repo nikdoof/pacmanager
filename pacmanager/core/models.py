@@ -35,9 +35,14 @@ class Corporation(models.Model):
     balance = models.DecimalField('Current Balance', max_digits=25, decimal_places=2, default=0)
 
     last_transaction = models.BigIntegerField('Last Transaction ID', default=0)
-    payment_id = models.CharField('Payment ID', max_length=36, default=uuid4)
+    payment_id = models.CharField('Payment ID', max_length=36)
     
     objects = CorporationManager()
+
+    def save(self, *args, **kwargs):
+        if self.payment_id is None or self.payment_id == '':
+            self.payment_id = str(uuid4())
+        return super(Corporation, self).save(*args, **kwargs)
 
     def __unicode__(self):
         if self.name: 

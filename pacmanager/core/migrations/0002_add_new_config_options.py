@@ -1,105 +1,28 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
+class Migration(DataMigration):
 
-class Migration(SchemaMigration):
+    conf = (
+        ('pac.tax_threshold', '200000000'),
+        ('pac.tax_rate', '10'),
+    )
 
     def forwards(self, orm):
-        # Adding model 'Setting'
-        db.create_table('core_setting', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('key', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('value', self.gf('django.db.models.fields.CharField')(max_length=200)),
-        ))
-        db.send_create_signal('core', ['Setting'])
-
-        # Adding model 'Character'
-        db.create_table('core_character', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-        ))
-        db.send_create_signal('core', ['Character'])
-
-        # Adding model 'Corporation'
-        db.create_table('core_corporation', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('tax_rate', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
-            ('ceo', self.gf('django.db.models.fields.related.ForeignKey')(related_name='+', to=orm['core.Character'])),
-            ('contact', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='corporations', null=True, to=orm['auth.User'])),
-            ('balance', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=25, decimal_places=2)),
-            ('last_transaction', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
-            ('payment_id', self.gf('django.db.models.fields.CharField')(max_length=36)),
-        ))
-        db.send_create_signal('core', ['Corporation'])
-
-        # Adding model 'MonthTotal'
-        db.create_table('core_monthtotal', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('year', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('month', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('corporation', self.gf('django.db.models.fields.related.ForeignKey')(related_name='totals', to=orm['core.Corporation'])),
-            ('tax', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=25, decimal_places=2)),
-            ('charged', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('core', ['MonthTotal'])
-
-        # Adding model 'Transaction'
-        db.create_table('core_transaction', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('corporation', self.gf('django.db.models.fields.related.ForeignKey')(related_name='transactions', to=orm['core.Corporation'])),
-            ('type', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('value', self.gf('django.db.models.fields.DecimalField')(max_digits=25, decimal_places=2)),
-            ('comment', self.gf('django.db.models.fields.CharField')(max_length=255)),
-        ))
-        db.send_create_signal('core', ['Transaction'])
-
-        # Adding model 'Key'
-        db.create_table('core_key', (
-            ('corporation', self.gf('django.db.models.fields.related.ForeignKey')(related_name='keys', to=orm['core.Corporation'])),
-            ('keyid', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
-            ('vcode', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('mask', self.gf('django.db.models.fields.BigIntegerField')()),
-            ('active', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('update', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-        ))
-        db.send_create_signal('core', ['Key'])
-
-        # Adding model 'APICache'
-        db.create_table('core_apicache', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('key', self.gf('django.db.models.fields.CharField')(max_length=40)),
-            ('cache_until', self.gf('django.db.models.fields.DateTimeField')()),
-            ('document', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal('core', ['APICache'])
+        for key, val in self.conf:
+            orm.Setting.objects.get_or_create(key=key, value=val)
 
     def backwards(self, orm):
-        # Deleting model 'Setting'
-        db.delete_table('core_setting')
+        for key, val in self.conf:
+            try:
+                obj = orm.Setting.objects.get(key=key)
+                obj.delete()
+            except orm.Setting.DoesNotExist:
+                pass
 
-        # Deleting model 'Character'
-        db.delete_table('core_character')
-
-        # Deleting model 'Corporation'
-        db.delete_table('core_corporation')
-
-        # Deleting model 'MonthTotal'
-        db.delete_table('core_monthtotal')
-
-        # Deleting model 'Transaction'
-        db.delete_table('core_transaction')
-
-        # Deleting model 'Key'
-        db.delete_table('core_key')
-
-        # Deleting model 'APICache'
-        db.delete_table('core_apicache')
 
     models = {
         'auth.group': {
@@ -198,3 +121,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['core']
+    symmetrical = True
