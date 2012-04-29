@@ -21,13 +21,13 @@ Configuration
 
 These options are defined in the "Settings" model.
 
-pac.tax_threshold - The minimum per-month tax value (default 200,000,000)
-pac.tax_rate - The value at which PACs are taxed at after the threshold (default 10)
+* pac.tax_threshold - The minimum per-month tax value (default 200,000,000)
+* pac.tax_rate - The value at which PACs are taxed at after the threshold (default 10)
 
-payments.keyid - Key ID of the API Key for the payments wallet
-payments.vcode - vCode for the API Key for the payments wallet
-payments.last_id - Last RefID processed, only adjust this if you really really need to.
-payments.corpname - Name of the corp which holds the payments wallet
+* payments.keyid - Key ID of the API Key for the payments wallet
+* payments.vcode - vCode for the API Key for the payments wallet
+* payments.last_id - Last RefID processed, only adjust this if you really really need to.
+* payments.corpname - Name of the corp which holds the payments wallet
 
 
 
