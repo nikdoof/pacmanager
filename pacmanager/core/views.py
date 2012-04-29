@@ -8,6 +8,7 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView, U
 from django.views.generic.detail import SingleObjectMixin
 from django.utils import simplejson as json
 from django.contrib import messages
+from django.db.models import Sum
 
 from eveapi import EVEAPIConnection, Error
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
@@ -83,6 +84,13 @@ class CorporationListView(LoginRequiredMixin, ListView):
 
     model = Corporation
     paginate_by = 25
+
+    def get_context_data(self, **kwargs):
+        ctx = super(CorporationListView, self).get_context_data(**kwargs)
+        ctx.update({
+            'total': self.get_queryset().filter(balance__lt=0).aggregate(Sum('balance'))['balance__sum'] or Decimal('0')
+        })
+        return ctx
 
     def get_queryset(self):
         if self.request.user.has_perm('core.view_all_corporation'):

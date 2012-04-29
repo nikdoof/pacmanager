@@ -24,8 +24,11 @@
 {% for obj in object_list %}
     <tr><td><a href="{% url corporation-detail obj.pk %}">{{ obj.name }}</a></td><td>{% if obj.contact %}{{ obj.contact.username }}{% else %}<a href="{% url corporation-updatecontact obj.pk %}">Assign Contact</a>{% endif %}</td><td>{{ obj.ceo }}</td><td>{{ obj.tax_rate }}%</td><td><span class="{% if obj.balance >= 0 %}positive{% else %}negative{% endif %}">{{ obj.balance|intcomma }} ISK</span></td></tr>
 {% endfor %}
+  <tr><th colspan="4">Total Outstanding</th><th><span class="{% if total >= 0 %}positive{% else %}negative{% endif %}"><b>{{ total|intcomma }} ISK</b></span></th></tr>
   </tbody>
 </table>
 </p>
+{% else %}
+<p><small>No corporations are currently available, consider <a href="{% url key-create %}">adding a API key</a>.</small></p>
 {% endif %}
 {% endblock %}

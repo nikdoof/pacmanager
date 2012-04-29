@@ -85,8 +85,8 @@ class Transaction(models.Model):
     )
 
     corporation = models.ForeignKey(Corporation, related_name='transactions')
-    type = models.PositiveIntegerField(choices=TRANSACTION_TYPE_CHOICES)
-    date = models.DateTimeField('Transaction Date', auto_now_add=True)
+    type = models.PositiveIntegerField(choices=TRANSACTION_TYPE_CHOICES, help_text="The type of transaction")
+    date = models.DateTimeField('Transaction Date', auto_now_add=True, help_text="The date/time the transaction was processed")
     value = models.DecimalField('Transaction Value', max_digits=25, decimal_places=2)
     comment = models.CharField(max_length=255)
 
@@ -97,8 +97,8 @@ class Key(models.Model):
     """EVE API Key"""
     corporation = models.ForeignKey(Corporation, related_name='keys', blank=False, null=False)
 
-    keyid = models.BigIntegerField('Key ID', primary_key=True)
-    vcode = models.CharField('vCode', max_length=64)
+    keyid = models.BigIntegerField('Key ID', primary_key=True, help_text="Your EVE API key ID")
+    vcode = models.CharField('vCode', max_length=64, help_text="Your EVE API key vCode")
     mask = models.BigIntegerField('Access Mask')
     active = models.BooleanField('Active', default=True)
     
@@ -110,7 +110,6 @@ class Key(models.Model):
         """ Returns a bool indicating if the bit is set in the accessmask """
         mask = 1 << bit
         return (accessmask & mask) > 0
-
 
     def save(self, *args, **kwargs):
         self.update_api()

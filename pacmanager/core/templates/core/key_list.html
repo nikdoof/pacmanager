@@ -19,6 +19,8 @@
   </tbody>
 </table>
 </p>
+{% else %}
+<p><small>No keys are currently stored.</small></p>
 {% endif %}
 
 <p><a href="{% url key-create %}" class="btn"><i class="icon-plus"></i> Add Key</a></p>

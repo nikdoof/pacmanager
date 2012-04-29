@@ -2,9 +2,7 @@
 
 {% block content %}
 <h1>Assign Corporation Contact</h1>
-
 <p>Select the username of the contact you wish to assign to {{ object.name }}.</p>
-
 <p>
 <form action="{% url corporation-updatecontact object.pk %}" method="post" class="well">
 <fieldset>
