@@ -16,6 +16,7 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from .tasks import import_wallet_journal
 from .forms import KeyForm, CorporationContactForm, ManualAdjustmentForm
 from .models import Corporation, Key, APICache, Transaction, MonthTotal
+from .conf import managerconf
 
 class KeyListView(LoginRequiredMixin, ListView):
 
@@ -128,6 +129,7 @@ class CorporationDetailView(LoginRequiredMixin, DetailView):
         ctx.update({
             'balances': balances,
             'last_update': last_update,
+            'payment_corp': managerconf.get('payment.corpname', 'Upvote'),
         })
         
         return ctx

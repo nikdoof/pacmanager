@@ -16,6 +16,9 @@ class Setting(models.Model):
     key = models.CharField(max_length=32)
     value = models.CharField(max_length=200)
 
+    def __unicode__(self):
+        return self.key
+
 
 class Character(models.Model):
     name = models.CharField(max_length=255)
@@ -33,7 +36,7 @@ class Corporation(models.Model):
     balance = models.DecimalField('Current Balance', max_digits=25, decimal_places=2, default=0)
 
     last_transaction = models.BigIntegerField('Last Transaction ID', default=0)
-    payment_id = models.CharField('Payment ID', max_length=36)
+    payment_id = models.CharField('Payment ID', max_length=36, default=uuid4)
     
     objects = CorporationManager()
 
@@ -41,11 +44,6 @@ class Corporation(models.Model):
         if self.name: 
             return u'%s' % self.name
         return u'%s' % self.pk 
-
-    def save(self, *args, **kwargs):
-        if self.payment_id is None or self.payment_id == '':
-            self.payment_id = uuid4()
-        return super(Corporation, self).save(*args, **kwargs)
 
 
 class MonthTotal(models.Model):
@@ -176,4 +174,7 @@ class APICache(models.Model):
                 if obj.cache_until >= datetime.utcnow().replace(tzinfo=utc):
                     return obj.document
             return None
+
+    def __unicode__(self):
+        return self.key
    

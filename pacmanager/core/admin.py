@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Setting, Character, Corporation, Key, Transaction, MonthTotal, APICache
 
 class SettingAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('key', 'value')
 
 class CharacterAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
@@ -32,6 +32,7 @@ class MonthTotalAdmin(admin.ModelAdmin):
     
 class APICacheAdmin(admin.ModelAdmin):
     list_display = ('key', 'cache_until')
+
 
 admin.site.register(Setting, SettingAdmin)
 admin.site.register(Character, CharacterAdmin)

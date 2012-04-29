@@ -29,6 +29,6 @@
 </table>
 </p>
 {% else %}
-<p><small>No corporations are currently available, consider <a href="{% url key-create %}">adding a API key</a>.</small></p>
+<p><small>No corporations are currently available to you{% if perms.add_key %}, consider <a href="{% url key-create %}">adding a API key</a>{% endif %}.</small></p>
 {% endif %}
 {% endblock %}

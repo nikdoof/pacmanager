@@ -24,11 +24,12 @@ span.negative {	color: red; }
 {% endfor %}
 </table>
 {% else %}
-<p>No wallet balance information is available at this time.</p>
+<p><small>No wallet balance information is available at this time.</small></p>
 {% endif %}
-
 <p>&nbsp;</p>
-
+<h2>Balance Payment</h2>
+<p>To make a payment towards this corporation's fees, send money to <b>{{ payment_corp }}</b> with <b>{{ object.payment_id }}</b> as the "Reason" field.</p>
+<p>&nbsp;</p>
 {% if object.totals.count %}
 <h2>Tax Period Overview</h2>
 <p><small>Total transactions by taxable periods and related fees</small></p>

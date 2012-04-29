@@ -23,7 +23,9 @@
 <p><small>No keys are currently stored.</small></p>
 {% endif %}
 
+{% if perms.add_key %}
 <p><a href="{% url key-create %}" class="btn"><i class="icon-plus"></i> Add Key</a></p>
+{% endif %}
 {% endblock %}
 
 {% block footer %}

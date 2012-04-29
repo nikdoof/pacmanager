@@ -6,7 +6,7 @@ from django.utils.timezone import utc
 
 from eveapi import EVEAPIConnection, Error, Rowset
 from .conf import managerconf
-from .models import Corporation, APICache, MonthTotal
+from .models import Corporation, APICache, MonthTotal, Transaction
 
 def import_wallet_journal(corporation_id):
     corp = Corporation.objects.get(pk=corporation_id)
@@ -18,7 +18,7 @@ def import_wallet_journal(corporation_id):
         def get_records(corp=None, fromID=None, rowCount=2560):
             if fromID and fromID <= corp.last_transaction:
                 return None
-            print "get_records: ", corp, fromID
+            #print "get_records: ", corp, fromID
             try:
                 res = auth.corp.WalletJournal(rowCount=rowCount, fromID=fromID)
             except Error, e:
@@ -35,12 +35,12 @@ def import_wallet_journal(corporation_id):
 
         # Process Rows
         rows = get_records(corp).SortedBy('refID', reverse=True)
-        print "Total rows: ", len(rows)
+        logging.info("Total rows: %s" % len(rows))
         totals = {}
         for record in rows:
             if int(record.refID) > corp.last_transaction:
                 if int(record.refTypeID) in getattr(settings, 'PAC_TAX_REFIDS', [85, 99]):
-                    print record.refID, int(record.refTypeID), record.amount
+                    #print record.refID, int(record.refTypeID), record.amount
                     dt = datetime.fromtimestamp(record.date).replace(tzinfo=utc)
                     if not totals.has_key('%s-%s' % (dt.year, dt.month)):
                         totals['%s-%s' % (dt.year, dt.month)], created = MonthTotal.objects.get_or_create(corporation=corp, year=dt.year, month=dt.month)
@@ -67,15 +67,33 @@ def process_pac_wallet():
     for corp in Corporation.objects.all():
         paymentid[corp.payment_id] = corp
 
+    if not 'payments.keyid' in managerconf or not 'payments.vcode' in managerconf:
+        logging.error('No payments Key ID / vCode set!')
+        return 
+
+    api = EVEAPIConnection(cacheHandler=APICache.DjangoCacheHandler())
     auth = api.auth(keyID=managerconf['payments.keyid'], vCode=managerconf['payments.vcode'])
     try:
-        res = auth.corp.WalletJournal(rowCount=2560)
+        entries = auth.corp.WalletJournal(rowCount=2560).entries.SortedBy('refID', reverse=True)
     except Error, e:
-        print e
+        logging.error('Error importing Payments wallet: %s' % e)
+        return
 
-    for record in res.entries:
-        if int(record.refID) > managerconf['payments.last_id'] and record.reason.replace('DESC:', '') in paymentid.keys():
-            continue
+    if not 'payments.last_id' in managerconf:
+        managerconf['payments.last_id'] = 0
+
+    logging.info('Last processed Ref ID: %s' % managerconf['payments.last_id'])
+    for record in entries:
+        if int(record.refID) > int(managerconf['payments.last_id']):
+            res = record.reason.replace('DESC: ', '').strip()
+            if paymentid.has_key(res):
+                corp = paymentid[res]
+                logging.info('Payment Found, %s, Ref ID %s, Amount: %s ISK' % (corp.name, record.refID, record.amount))
+                # Payment found
+                trans = Transaction.objects.create(corporation=corp, value=record.amount, comment="Wallet Ref ID %s" % record.refID, type=Transaction.TRANSACTION_TYPE_PAYMENT)
+                corp.balance += Decimal(str(record.amount))
+                corp.save()
         else:
             break
 
+    managerconf['payments.last_id'] = entries[0].refID
