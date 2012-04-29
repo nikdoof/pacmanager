@@ -33,6 +33,7 @@ class Corporation(models.Model):
     ceo = models.ForeignKey(Character, related_name='+')
     contact = models.ForeignKey(User, related_name='corporations', null=True, blank=True)
     balance = models.DecimalField('Current Balance', max_digits=25, decimal_places=2, default=0)
+    fixed_value = models.DecimalField('Fixed Value Fee', max_digits=25, decimal_places=2, default=None, null=True, blank=True, help_text='Define a fixed fee to charge instead of a pro-rata of tax income')
 
     last_transaction = models.BigIntegerField('Last Transaction ID', default=0)
     payment_id = models.CharField('Payment ID', max_length=36)
@@ -62,6 +63,8 @@ class MonthTotal(models.Model):
     @property
     def fees_due(self):
         from .conf import managerconf
+        if self.corporation.fixed_value is not None:
+            return self.corporation.fixed_value
         threshold = Decimal(managerconf.get('pac.tax_threshold', '200000000'))
         calc = (self.tax / self.corporation.tax_rate) * int(managerconf.get('pac.tax_rate', '10'))
         if calc > threshold: return round(calc, 2)
