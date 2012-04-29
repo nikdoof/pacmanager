@@ -23,6 +23,7 @@ def import_wallet_journal(corporation_id):
             except Error, e:
                 print e
             else:
+                if type(res.entries) == str: return None
                 entries = res.entries.SortedBy('refID', reverse=True)
                 if len(entries) == rowCount:
                     rows = get_records(corp, fromID=entries[-1].refID)
@@ -33,12 +34,14 @@ def import_wallet_journal(corporation_id):
                     
 
         # Process Rows
-        rows = get_records(corp).SortedBy('refID', reverse=True)
+        rows = get_records(corp)
+        if rows is None: return
+        rows = rows.SortedBy('refID', reverse=True)
         logging.info("Total rows: %s" % len(rows))
         totals = {}
         for record in rows:
             if int(record.refID) > corp.last_transaction:
-                if int(record.refTypeID) in [int(x.trim()) for x in managerconf.get('pac.tax_refids', '85,99').split(',')]:
+                if int(record.refTypeID) in [int(x.strip()) for x in managerconf.get('pac.tax_refids', '85,99').split(',')]:
                     #print record.refID, int(record.refTypeID), record.amount
                     dt = datetime.fromtimestamp(record.date).replace(tzinfo=utc)
                     if not totals.has_key('%s-%s' % (dt.year, dt.month)):
