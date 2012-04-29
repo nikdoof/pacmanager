@@ -4,7 +4,6 @@ from uuid import uuid4
 import logging
 from eveapi import EVEAPIConnection, Error
 
-from django.conf import settings
 from django.db import models
 from django.utils.timezone import utc
 from django.contrib.auth.models import User
@@ -57,8 +56,9 @@ class MonthTotal(models.Model):
 
     @property
     def fees_due(self):
-        threshold = getattr(settings, 'PAC_TAX_THRESHOLD', Decimal('200000000'))
-        calc = (self.tax / self.corporation.tax_rate) * getattr(settings, 'PAC_TAX_RATE', 10)
+        from .conf import managerconf
+        threshold = Decimal(managerconf.get('pac.tax_threshold', '200000000'))
+        calc = (self.tax / self.corporation.tax_rate) * int(managerconf.get('pac.tax_rate', '10'))
         if calc > threshold: return round(calc, 2)
         return threshold
 

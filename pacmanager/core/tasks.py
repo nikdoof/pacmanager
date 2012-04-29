@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
 from decimal import Decimal
-from django.conf import settings
 from django.utils.timezone import utc
 
 from eveapi import EVEAPIConnection, Error, Rowset
@@ -39,7 +38,7 @@ def import_wallet_journal(corporation_id):
         totals = {}
         for record in rows:
             if int(record.refID) > corp.last_transaction:
-                if int(record.refTypeID) in getattr(settings, 'PAC_TAX_REFIDS', [85, 99]):
+                if int(record.refTypeID) in [int(x.trim()) for x in managerconf.get('pac.tax_refids', '85,99').split(',')]:
                     #print record.refID, int(record.refTypeID), record.amount
                     dt = datetime.fromtimestamp(record.date).replace(tzinfo=utc)
                     if not totals.has_key('%s-%s' % (dt.year, dt.month)):
