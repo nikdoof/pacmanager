@@ -92,7 +92,7 @@ def process_pac_wallet():
                 corp = paymentid[res]
                 logging.info('Payment Found, %s, Ref ID %s, Amount: %s ISK' % (corp.name, record.refID, record.amount))
                 # Payment found
-                trans = Transaction.objects.create(corporation=corp, value=record.amount, comment="Wallet Ref ID %s" % record.refID, type=Transaction.TRANSACTION_TYPE_PAYMENT)
+                trans = Transaction.objects.create(corporation=corp, value=Decimal(str(record.amount)), comment="Wallet Ref ID %s" % record.refID, type=Transaction.TRANSACTION_TYPE_PAYMENT)
                 corp.balance += Decimal(str(record.amount))
                 corp.save()
         else:
