@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from decimal import Decimal
-from django.utils.timezone import utc
+from django.utils.timezone import utc, now
 
 from eveapi import EVEAPIConnection, Error, Rowset
 from .conf import managerconf
@@ -58,6 +58,8 @@ def import_wallet_journal(corporation_id):
 
 def process_corps():
     for corp in Corporation.objects.all():
+        dt = now()
+        MonthTotal.objects.get_or_create(corporation=corp, year=dt.year, month=dt.month)
         if corp.keys.count():
             logging.info('Processing %s' % corp.name)
             import_wallet_journal(corp.id)
