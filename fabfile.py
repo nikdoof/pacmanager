@@ -32,22 +32,23 @@ def chdir(path):
     if env.local:
         with lcd(path):
             yield
-    with cd(path):
-        yield
-        
+    else:
+        with cd(path):
+            yield
+
 @_contextmanager
 def virtualenv():
     with chdir(env.path):
         with prefix('. %s' % os.path.join(env.path, 'env/bin/activate')):
             yield
-        
+
 def manage(args):
     """Run and Django manage.py command"""
     with virtualenv():
-        runcmd('%s %s' % (env.managepath, args))    
-      
+        runcmd('%s %s' % (env.managepath, args))
+
 ## Tasks
-        
+
 @task
 def virtualenv_setup():
     if not os.path.exists('env'):
@@ -63,9 +64,13 @@ def runserver(port=3333):
     manage('runserver %s:%s' % (ip, port))
 
 @task
+def collectstatic():
+    manage('collectstatic --link --noinput')
+
+@task
 def syncdb():
     manage('syncdb --migrate --noinput')
-        
+
 @task
 def test():
     manage('test --noinput --failfast')
