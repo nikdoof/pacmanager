@@ -66,7 +66,10 @@ class MonthTotal(models.Model):
         if self.corporation.fixed_value is not None:
             return self.corporation.fixed_value
         threshold = Decimal(managerconf.get('pac.tax_threshold', '200000000'))
-        calc = (self.tax / self.corporation.tax_rate) * int(managerconf.get('pac.tax_rate', '10'))
+        if self.corporation.tax_rate == 0:
+            calc = 0
+        else:
+            calc = (self.tax / self.corporation.tax_rate) * int(managerconf.get('pac.tax_rate', '10'))
         if calc > threshold: return round(calc, 2)
         return threshold
 
