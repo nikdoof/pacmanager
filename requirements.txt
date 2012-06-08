@@ -3,3 +3,5 @@ South==0.7.4
 -e git+https://github.com/nikdoof/eveapi.git#egg=eveapi
 -e git://github.com/nikdoof/django-braces.git#egg=django-braces
 -e git+https://github.com/disqus/django-modeldict.git#egg=modeldict
+psycopg2==2.4.5
+dj-database-url==0.2.0
