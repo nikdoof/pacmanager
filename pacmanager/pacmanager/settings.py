@@ -111,6 +111,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.humanize',
+    'gunicorn',
     'south',
     'braces',
     'formtools',
