@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for total in MonthTotal.objects.filter(charged=False):
-            if datetime.datetime(total.year, total.month, calendar.monthrange(total.year, total.month)[1], 23, 59, 59) < now():
+            if datetime.datetime(total.year, total.month, calendar.monthrange(total.year, total.month)[1], 23, 59, 59, tzinfo=utc) < now():
                 print "Charging %s - %s/%s" % (total.corporation, total.year, total.month)
                 total.corporation.balance -= Decimal(str(self.object.fees_due))
                 total.charged = True
