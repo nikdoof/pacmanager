@@ -118,6 +118,12 @@ INSTALLED_APPS = (
     'core',
 )
 
+AUTHENTICATION_BACKENDS = (
+ 'django-testauth.auth.TESTAuthBackend',
+ 'django.contrib.auth.backends.ModelBackend',
+)
+
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
