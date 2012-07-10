@@ -11,9 +11,12 @@ def import_wallet_journal(corporation_id):
     corp = Corporation.objects.get(pk=corporation_id)
     api = EVEAPIConnection(cacheHandler=APICache.DjangoCacheHandler())
 
+    # create current month
+    MonthTotal.objects.get_or_create(corporation=corp, year=now().year, month=now().month)
+
     for key in corp.keys.all():
         auth = api.auth(keyID=key.pk, vCode=key.vcode)
-        
+
         def get_records(corp=None, fromID=None, rowCount=2560):
             if fromID and fromID <= corp.last_transaction:
                 return None
@@ -31,7 +34,7 @@ def import_wallet_journal(corporation_id):
                         for row in rows._rows:
                             entries.append(row)
                 return entries
-                    
+
 
         # Process Rows
         rows = get_records(corp)
@@ -63,9 +66,9 @@ def process_corps():
         if corp.keys.count():
             logging.info('Processing %s' % corp.name)
             import_wallet_journal(corp.id)
-            
-            
-            
+
+
+
 def process_pac_wallet():
     paymentid = {}
     for corp in Corporation.objects.all():
@@ -73,7 +76,7 @@ def process_pac_wallet():
 
     if not 'payments.keyid' in managerconf or not 'payments.vcode' in managerconf:
         logging.error('No payments Key ID / vCode set!')
-        return 
+        return
 
     api = EVEAPIConnection(cacheHandler=APICache.DjangoCacheHandler())
     auth = api.auth(keyID=managerconf['payments.keyid'], vCode=managerconf['payments.vcode'])
