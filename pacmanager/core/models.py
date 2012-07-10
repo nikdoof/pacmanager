@@ -113,6 +113,7 @@ class Key(models.Model):
     
     created = models.DateTimeField('Created Date/Time', auto_now_add=True)
     update = models.DateTimeField('Last Update Date/Time', auto_now=True)
+    error = models.CharField('API Error', blank=False, null=True, max_length=512)
 
     @staticmethod
     def check_access_bit(accessmask, bit):
@@ -156,7 +157,6 @@ class APICache(models.Model):
     key = models.CharField('Cache Key', blank=False, max_length=40)
     cache_until = models.DateTimeField('Cached Until', blank=False)
     document = models.TextField('Document')
-    error = models.CharField('API Error', blank=False, null=True, max_length=512)
 
     class DjangoCacheHandler(object):
 

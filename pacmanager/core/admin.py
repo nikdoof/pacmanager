@@ -16,7 +16,7 @@ class CorporationAdmin(admin.ModelAdmin):
 class KeyAdmin(admin.ModelAdmin):
     list_display = ('keyid', 'corporation', 'mask', 'active', 'created', 'update')
     list_filter = ('corporation', 'active')
-    readonly_fields = ('keyid', 'vcode', 'mask', 'corporation')
+    readonly_fields = ('keyid', 'vcode', 'mask', 'corporation', 'error')
 
 
 class TransactionAdmin(admin.ModelAdmin):
