@@ -25,10 +25,10 @@ def import_wallet_journal(corporation_id):
             except Error, e:
                 print e
                 key.error = str(e)
-                key.save()
+                key.save(noupdate=True)
             else:
                 key.error = None
-                key.save()
+                key.save(noupdate=True)
                 if type(res.entries) == str: return None
                 entries = res.entries.SortedBy('refID', reverse=True)
                 if len(entries) == rowCount:

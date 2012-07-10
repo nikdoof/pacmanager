@@ -121,7 +121,9 @@ class Key(models.Model):
         return (accessmask & mask) > 0
 
     def save(self, *args, **kwargs):
-        self.update_api()
+        noupdate = kwargs.pop('noupdate', False)
+        if not noupdate:
+            self.update_api()
         return super(Key, self).save(*args, **kwargs)
 
     def update_api(self):
