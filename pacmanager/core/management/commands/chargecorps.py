@@ -1,6 +1,7 @@
 import logging
 import datetime
 import calendar
+from decimal import Decimal
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.timezone import utc, now
