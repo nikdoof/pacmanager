@@ -154,6 +154,7 @@ class APICache(models.Model):
     key = models.CharField('Cache Key', blank=False, max_length=40)
     cache_until = models.DateTimeField('Cached Until', blank=False)
     document = models.TextField('Document')
+    error = models.CharField('API Error', blank=False, null=True, max_length=512)
 
     class DjangoCacheHandler(object):
 

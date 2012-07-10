@@ -20,12 +20,15 @@ def import_wallet_journal(corporation_id):
         def get_records(corp=None, fromID=None, rowCount=2560):
             if fromID and fromID <= corp.last_transaction:
                 return None
-            #print "get_records: ", corp, fromID
             try:
                 res = auth.corp.WalletJournal(rowCount=rowCount, fromID=fromID)
             except Error, e:
                 print e
+                key.error = str(e)
+                key.save()
             else:
+                key.error = None
+                key.save()
                 if type(res.entries) == str: return None
                 entries = res.entries.SortedBy('refID', reverse=True)
                 if len(entries) == rowCount:
