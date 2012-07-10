@@ -16,11 +16,13 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from .tasks import import_wallet_journal
 from .forms import KeyForm, CorporationContactForm, ManualAdjustmentForm
 from .models import Corporation, Key, APICache, Transaction, MonthTotal
+from .utils import DiggPaginator
 from .conf import managerconf
 
 class KeyListView(LoginRequiredMixin, ListView):
 
     model = Key
+    paginator_class = DiggPaginator
     paginate_by = 25
 
     def get_queryset(self):
@@ -84,6 +86,7 @@ class KeyImportView(LoginRequiredMixin, SingleObjectMixin, View):
 class CorporationListView(LoginRequiredMixin, ListView):
 
     model = Corporation
+    paginator_class = DiggPaginator
     paginate_by = 25
 
     def get_context_data(self, **kwargs):
