@@ -14,7 +14,7 @@
 	<td>{% if perms.delete_key %}<a href="#" class="delete" id="{{ obj.pk }}" title="Remove"><i class="icon-remove"></i></a> {% endif %}
 	<a href="#" class="refresh" id="{{ obj.pk }}" title="Refresh"><i class="icon-repeat"></i></a>
 	<a href="#" class="import" id="{{ obj.pk }}" title="Import Wallet"><i class="icon-download-alt"></i></a>
-	{% if obj.error %}<i class="icon-exclamation-sign" alt="{{ obj.error }}"></i>{% endif %}
+	{% if obj.error %}<i class="icon-exclamation-sign" title="{{ obj.error }}"></i>{% endif %}
 	</td></tr>
 {% endfor %}
   </tbody>
